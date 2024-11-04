@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mnu_switch"
+        android:title="@string/switch_layout"
+        android:icon="@drawable/ic_switches_24"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_about"
+        android:title="@string/about"
+        android:icon="@drawable/ic_info_24"
+        app:showAsAction="never" />
+    <item
+        app:showAsAction="never"
+        android:icon="@drawable/ic_exit_to_app_24"
+        android:title="@string/exit_app"
+        android:id="@+id/mnu_exit_app"/>
+</menu>

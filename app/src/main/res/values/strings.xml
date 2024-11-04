@@ -6,4 +6,17 @@
     <string name="sign_in">Sign In</string>
     <string name="login_success">Login success</string>
     <string name="login_failed">Login Failed\n</string>
+    <string name="about">About</string>
+    <string name="exit_app">Exit App</string>
+    <string name="switch_layout">Switch Layout</string>
+    <string name="information_student">Information Student</string>
+    <string name="fullname">Fullname:</string>
+    <string name="tran_thanh_sang">Trần Thanh Sang</string>
+    <string name="dh52111659">DH52111659</string>
+    <string name="class_stu">Class:</string>
+    <string name="d21_th09">D21_TH09</string>
+    <string name="phone_number">Phone:</string>
+    <string name="_0376033147">0376033147</string>
+    <string name="email">Email:</string>
+    <string name="dh52111659_student_stu_edu_vn">DH52111659@student.stu.edu.vn</string>
 </resources>

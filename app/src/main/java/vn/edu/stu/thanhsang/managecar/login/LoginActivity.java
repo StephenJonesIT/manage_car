@@ -53,7 +53,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void processLogin() {
-        sharedPref = getSharedPreferences("data_login",Context.MODE_PRIVATE);
         String username = binding.tieUsername.getText().toString();
         String password = binding.tiePassword.getText().toString();
 
