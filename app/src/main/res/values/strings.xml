@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ManageCar</string>
+    <string name="form_username">Username</string>
+    <string name="form_password">Password\n</string>
+    <string name="remember_password">Remember Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="login_success">Login success</string>
+    <string name="login_failed">Login Failed\n</string>
 </resources>
