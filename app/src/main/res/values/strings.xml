@@ -19,4 +19,10 @@
     <string name="_0376033147">0376033147</string>
     <string name="email">Email:</string>
     <string name="dh52111659_student_stu_edu_vn">DH52111659@student.stu.edu.vn</string>
+    <string name="add_a_photo">Add a photo</string>
+    <string name="id">ID</string>
+    <string name="name">Name</string>
+    <string name="base">Base</string>
+    <string name="save">SAVE</string>
+    <string name="edit">Edit</string>
 </resources>
