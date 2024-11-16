@@ -1,4 +1,4 @@
-package vn.edu.stu.thanhsang.managecar.login;
+package vn.edu.stu.thanhsang.managecar.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import vn.edu.stu.thanhsang.managecar.MainActivity;
 import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityLoginBinding;
 

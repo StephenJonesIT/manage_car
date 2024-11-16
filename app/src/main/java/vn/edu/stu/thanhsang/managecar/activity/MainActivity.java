@@ -1,4 +1,4 @@
-package vn.edu.stu.thanhsang.managecar;
+package vn.edu.stu.thanhsang.managecar.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.adapter.BranchAdapter;
 import vn.edu.stu.thanhsang.managecar.database.ManageCarDB;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityMainBinding;
@@ -29,7 +30,7 @@ import vn.edu.stu.thanhsang.managecar.model.Branch;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
-    ManageCarDB manageCarDB;
+    public static ManageCarDB manageCarDB;
     List<Branch> branchList;
     BranchAdapter adapter;
 
@@ -58,15 +59,19 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new BranchAdapter(
                 branchList,
-                new BranchAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position) {
 
-                    }
+                position -> {
+                    Intent intentEdit = new Intent(
+                            MainActivity.this,
+                            EditBranchActivity.class
+                    );
+                    intentEdit.putExtra("BRANCH",branchList.get(position));
+                    launcher.launch(intentEdit);
                 },
                 new BranchAdapter.OnItemLongClickListener() {
                     @Override
                     public boolean onItemLongClick(int position) {
+                        processDeleteBranch(position);
                         return false;
                     }
                 });
@@ -75,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
             binding.rcvBranch.setAdapter(adapter);
             getDataFromDatabase();
     }
+
+
 
     private void addEvents() {
         binding.btnAddBranch.setOnClickListener(v -> {
@@ -96,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         }
         adapter.notifyDataSetChanged();
     }
+    private void processDeleteBranch(int position) {
+    }
 
     private void clickAddBranch() {
       launcher.launch(new Intent(
@@ -105,15 +114,16 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode()==EditBranchActivity.CODE_ADD){
-                        Branch branch = (Branch) result.getData().getSerializableExtra("BRANCH");
-                        processAddBranch(branch);
-                    }
-                    getDataFromDatabase();
+            result -> {
+                if(result.getResultCode()==EditBranchActivity.CODE_ADD){
+                    Branch branch = (Branch) result.getData().getSerializableExtra("BRANCH");
+                    processAddBranch(branch);
                 }
+                else if (result.getResultCode()==EditBranchActivity.CODE_EDIT) {
+                    Branch branch = (Branch) result.getData().getSerializableExtra("BRANCH");
+                    processEditBranch(branch);
+                }
+                getDataFromDatabase();
             }
     );
 
@@ -131,6 +141,23 @@ public class MainActivity extends AppCompatActivity {
         byte[] image = branch.getImage();
         manageCarDB.InsertBranch(id,name,base,image);
         showToasts("Add branch success");
+    }
+
+    private void processEditBranch(Branch branch) {
+        String id = branch.getId();
+        for (Branch item: branchList) {
+            if(item.getId().equals(id)){
+                manageCarDB.UpdateBranch(
+                        id,
+                        branch.getName(),
+                        branch.getBase(),
+                        branch.getImage()
+                );
+                showToasts("Edit branch success");
+                return;
+            }
+        }
+        showToasts("Edit branch failed");
     }
 
     @Override
@@ -172,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void showToasts(String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

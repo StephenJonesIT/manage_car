@@ -1,6 +1,7 @@
 package vn.edu.stu.thanhsang.managecar.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class Branch implements Serializable {
     private String id;
@@ -47,6 +48,16 @@ public class Branch implements Serializable {
 
     public void setImage(byte[] image) {
         this.image = image;
+    }
+
+    @Override
+    public String toString() {
+        return "Branch{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", base='" + base + '\'' +
+                ", image=" + Arrays.toString(image) +
+                '}';
     }
 }
 

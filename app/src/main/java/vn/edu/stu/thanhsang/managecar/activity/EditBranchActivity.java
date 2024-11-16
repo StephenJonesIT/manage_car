@@ -1,15 +1,19 @@
-package vn.edu.stu.thanhsang.managecar;
+package vn.edu.stu.thanhsang.managecar.activity;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
@@ -24,8 +28,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Objects;
 
+import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityEditBranchBinding;
 import vn.edu.stu.thanhsang.managecar.model.Branch;
 
@@ -51,7 +55,9 @@ public class EditBranchActivity extends AppCompatActivity {
         });
         addViews();
         addEvents();
+        getDataFromIntent();
     }
+
 
     private void addViews() {
         binding.toolbarEditBranch.setTitle("Branch Detail");
@@ -70,6 +76,31 @@ public class EditBranchActivity extends AppCompatActivity {
                 processAddBranch();
             }
         });
+    }
+
+    private void getDataFromIntent() {
+        Intent dataIntentBranch = getIntent();
+        if (dataIntentBranch.hasExtra("BRANCH")) {
+
+            branch = (Branch) dataIntentBranch.getSerializableExtra("BRANCH");
+            Log.d("DATA FROM MAIN_ACTIVITY", branch.toString());
+            Bitmap image = convertImageByteArray(branch.getImage());
+            binding.tieId.setText(branch.getId());
+            binding.tieName.setText(branch.getName());
+            binding.tieBase.setText(branch.getBase());
+            binding.imgBranch.setImageBitmap(image);
+
+            setEnableView();
+        }
+
+    }
+
+    private Bitmap convertImageByteArray(byte[] image) {
+        return BitmapFactory.decodeByteArray(
+                image,
+                0,
+                image.length
+        );
     }
 
     private void checkPermissionAndOpenSelector() {
@@ -144,7 +175,25 @@ public class EditBranchActivity extends AppCompatActivity {
     }
 
     private void processEditBranch() {
+        if (branch != null){
+            String id = String.valueOf(binding.tieId.getText());
+            String name = String.valueOf(binding.tieName.getText());
+            String base = String.valueOf(binding.tieBase.getText());
+            byte[] image = getImageFromView();
 
+            if (id.isEmpty() || name.isEmpty() || base.isEmpty()){
+                return;
+            }
+            branch.setId(id);
+            branch.setName(name);
+            branch.setBase(base);
+            branch.setImage(image);
+
+            Intent intent = new Intent();
+            intent.putExtra("BRANCH",branch);
+            setResult(CODE_EDIT,intent);
+            finish();
+        }
     }
 
     private byte[] getImageFromView() {
@@ -159,6 +208,36 @@ public class EditBranchActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_detail,menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        int mnu_edit = R.id.mnu_edit;
+        int mnu_about = R.id.mnu_about;
+        int mnu_exit_app = R.id.mnu_exit_app;
+
+        if (id == mnu_edit){
+            onclickShowEnableView();
+        }
+
+        if (id == mnu_about){
+            startActivity(new Intent(
+                    EditBranchActivity.this,
+                    InfoActivity.class
+            ));
+        }
+
+        if (id == mnu_exit_app){
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+            System.exit(0);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(
@@ -179,4 +258,20 @@ public class EditBranchActivity extends AppCompatActivity {
                 }
             }
     );
+    private void onclickShowEnableView(){
+        binding.btnSave.setVisibility(View.VISIBLE);
+        binding.tvAddPhoto.setEnabled(true);
+        binding.imgBranch.setEnabled(true);
+        binding.tieName.setEnabled(true);
+        binding.tieBase.setEnabled(true);
+    }
+
+    private void setEnableView(){
+        binding.btnSave.setVisibility(View.GONE);
+        binding.tvAddPhoto.setEnabled(false);
+        binding.imgBranch.setEnabled(false);
+        binding.tieId.setEnabled(false);
+        binding.tieName.setEnabled(false);
+        binding.tieBase.setEnabled(false);
+    }
 }

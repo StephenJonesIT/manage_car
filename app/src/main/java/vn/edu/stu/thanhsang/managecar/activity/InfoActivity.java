@@ -1,4 +1,4 @@
-package vn.edu.stu.thanhsang.managecar;
+package vn.edu.stu.thanhsang.managecar.activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityInfoBinding;
 
 public class InfoActivity extends AppCompatActivity implements OnMapReadyCallback {

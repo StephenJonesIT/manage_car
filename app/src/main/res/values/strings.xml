@@ -25,4 +25,7 @@
     <string name="base">Base</string>
     <string name="save">SAVE</string>
     <string name="edit">Edit</string>
+    <string name="product_name">Product Name</string>
+    <string name="year_of_manufacture">Year Of Manufacture</string>
+    <string name="product_price">Product Price</string>
 </resources>
