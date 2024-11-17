@@ -3,6 +3,7 @@ package vn.edu.stu.thanhsang.managecar.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.adapter.BranchAdapter;
+import vn.edu.stu.thanhsang.managecar.database.BranchTable;
 import vn.edu.stu.thanhsang.managecar.database.ManageCarDB;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityMainBinding;
 import vn.edu.stu.thanhsang.managecar.model.Branch;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         binding.toolbar.setTitle("");
         setSupportActionBar(binding.toolbar);
 
-        manageCarDB = new ManageCarDB(this, "ManageCar", null, 1);
+        manageCarDB = new ManageCarDB(this, "ManageCar", null, 2);
         branchList = new ArrayList<>();
 
         adapter = new BranchAdapter(
@@ -89,8 +91,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void getDataFromDatabase() {
-        Cursor cursorBranch = manageCarDB.getAllBranch();
+        SQLiteDatabase db = manageCarDB.getReadableDatabase();
+        Cursor cursorBranch = BranchTable.getAllBranch(db);
         branchList.clear();
 
         while (cursorBranch.moveToNext()){
@@ -130,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     private void processAddBranch(Branch branch) {
         String id = branch.getId();
         for (Branch b: branchList) {
-            if (b.getId()==id){
+            if (b.getId().equals(id)){
                 showToasts("Id already exists");
                 return;
             }
@@ -139,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
         String name = branch.getName();
         String base = branch.getBase();
         byte[] image = branch.getImage();
-        manageCarDB.InsertBranch(id,name,base,image);
+        SQLiteDatabase db = manageCarDB.getWritableDatabase();
+        BranchTable.InsertBranch(db,id,name,base,image);
         showToasts("Add branch success");
     }
 
@@ -147,7 +152,9 @@ public class MainActivity extends AppCompatActivity {
         String id = branch.getId();
         for (Branch item: branchList) {
             if(item.getId().equals(id)){
-                manageCarDB.UpdateBranch(
+                SQLiteDatabase db = manageCarDB.getWritableDatabase();
+                BranchTable.UpdateBranch(
+                        db,
                         id,
                         branch.getName(),
                         branch.getBase(),

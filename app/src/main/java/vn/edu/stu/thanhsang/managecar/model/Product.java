@@ -1,19 +1,24 @@
 package vn.edu.stu.thanhsang.managecar.model;
 
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class Product implements Serializable {
     private String idProduct;
     private String nameProduct;
     private String yearProduct;
-    private double priceProduct;
+    private String priceProduct;
     private byte[] imageProduct;
     private String branchProduct;
     public Product(
             String idProduct,
             String nameProduct,
             String yearProduct,
-            double priceProduct,
+            String priceProduct,
             byte[] imageProduct,
             String branchProduct
     ){
@@ -50,11 +55,11 @@ public class Product implements Serializable {
         this.yearProduct = yearProduct;
     }
 
-    public double getPriceProduct() {
+    public String getPriceProduct() {
         return priceProduct;
     }
 
-    public void setPriceProduct(double priceProduct) {
+    public void setPriceProduct(String priceProduct) {
         this.priceProduct = priceProduct;
     }
 
@@ -72,5 +77,18 @@ public class Product implements Serializable {
 
     public void setBranchProduct(String branchProduct) {
         this.branchProduct = branchProduct;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Product{" +
+                "idProduct='" + idProduct + '\'' +
+                ", nameProduct='" + nameProduct + '\'' +
+                ", yearProduct='" + yearProduct + '\'' +
+                ", priceProduct='" + priceProduct + '\'' +
+                ", imageProduct=" + Arrays.toString(imageProduct) +
+                ", branchProduct='" + branchProduct + '\'' +
+                '}';
     }
 }

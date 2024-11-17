@@ -36,10 +36,10 @@
                 android:layout_marginStart="80dp"
                 android:layout_marginEnd="80dp">
                 <ImageView
-                    android:id="@+id/img_branch"
+                    android:id="@+id/img_product"
                     android:layout_width="match_parent"
-                    android:src="@drawable/logo_car_defalut"
-                    android:scaleType="centerCrop"
+                    android:src="@drawable/logo_car_default"
+                    android:scaleType="centerInside"
                     android:layout_height="match_parent"/>
             </androidx.cardview.widget.CardView>
 
@@ -136,6 +136,7 @@
                     android:id="@+id/tie_price"
                     android:textSize="18sp"
                     android:singleLine="true"
+                    android:inputType="number"
                     android:hint="@string/product_price"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>

@@ -28,6 +28,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Objects;
 
 import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityEditBranchBinding;
@@ -62,7 +63,7 @@ public class EditBranchActivity extends AppCompatActivity {
     private void addViews() {
         binding.toolbarEditBranch.setTitle("Branch Detail");
         setSupportActionBar(binding.toolbarEditBranch);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
     private void addEvents() {
@@ -83,7 +84,7 @@ public class EditBranchActivity extends AppCompatActivity {
         if (dataIntentBranch.hasExtra("BRANCH")) {
 
             branch = (Branch) dataIntentBranch.getSerializableExtra("BRANCH");
-            Log.d("DATA FROM MAIN_ACTIVITY", branch.toString());
+            Log.d("DATA FROM MAIN_ACTIVITY", Objects.requireNonNull(branch).toString());
             Bitmap image = convertImageByteArray(branch.getImage());
             binding.tieId.setText(branch.getId());
             binding.tieName.setText(branch.getName());
@@ -141,6 +142,7 @@ public class EditBranchActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("IntentReset")
     private void openImageSelector() {
         Intent intentGallery = new Intent(
                 Intent.ACTION_PICK,
