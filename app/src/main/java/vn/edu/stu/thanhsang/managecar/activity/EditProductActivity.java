@@ -44,8 +44,6 @@ import vn.edu.stu.thanhsang.managecar.databinding.ActivityEditProductBinding;
 import vn.edu.stu.thanhsang.managecar.model.Product;
 
 public class EditProductActivity extends AppCompatActivity {
-    public static final int CODE_ADD = 100;
-    public static final int CODE_EDIT = 200;
     public static final int CODE_REQUEST_PERMISSION = 300;
 
     ActivityEditProductBinding binding;
@@ -113,7 +111,7 @@ public class EditProductActivity extends AppCompatActivity {
     private void getDataFromIntent() {
         Intent intentProduct = getIntent();
         if (intentProduct.hasExtra("PRODUCT")){
-            product = (Product) intentProduct.getSerializableExtra("PRODUCT");
+            product = intentProduct.getParcelableExtra("PRODUCT");
             Log.d("DATA FROM PRODUCT_ACTIVITY", Objects.requireNonNull(product).toString());
             if (product!=null){
                 binding.tieId.setText(product.getIdProduct());
@@ -123,6 +121,7 @@ public class EditProductActivity extends AppCompatActivity {
                 Bitmap image = convertImageByteArray(product.getImageProduct());
                 binding.imgProduct.setImageBitmap(image);
                 setPositionSpinner(product.getBranchProduct());
+                setEnableView();
             }
         }
     }
@@ -210,7 +209,26 @@ public class EditProductActivity extends AppCompatActivity {
     }
 
     private void processEditProduct() {
+        String id = String.valueOf(binding.tieId.getText());
+        String name = String.valueOf(binding.tieName.getText());
+        String price = String.valueOf(binding.tiePrice.getText());
+        String year = String.valueOf(binding.tieManufacture.getText());
+        String branch = String.valueOf(binding.spnBranch.getSelectedItem());
+        byte[] image = getImageFromView();
 
+        if (id.isEmpty() || name.isEmpty() || year.isEmpty()){
+            return;
+        }
+
+        for (Product item : ProductActivity.listProduct){
+            if (item.getIdProduct().equals(id)){
+                SQLiteDatabase db = MainActivity.manageCarDB.getWritableDatabase();
+                ProductTable.updateProduct(db, id, name, year, price, image, branch);
+                showToasts("Edit product success");
+                return;
+            }
+        }
+        showToasts("Edit product failure");
     }
 
     private byte[] getImageFromView() {
@@ -246,7 +264,31 @@ public class EditProductActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        int mnu_edit = R.id.mnu_edit;
+        int mnu_about = R.id.mnu_about;
+        int mnu_exit_app = R.id.mnu_exit_app;
 
+        if (id == mnu_edit){
+            onclickShowEnableView();
+        }
+
+        if (id == mnu_about){
+            startActivity(new Intent(
+                    EditProductActivity.this,
+                    InfoActivity.class
+            ));
+        }
+
+        if (id == mnu_exit_app){
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+            System.exit(0);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(
@@ -269,5 +311,23 @@ public class EditProductActivity extends AppCompatActivity {
     );
     private void showToasts(String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+    private void onclickShowEnableView(){
+        binding.btnSave.setVisibility(View.VISIBLE);
+        binding.tvAddPhoto.setEnabled(true);
+        binding.imgProduct.setEnabled(true);
+        binding.tieName.setEnabled(true);
+        binding.tieManufacture.setEnabled(true);
+        binding.tiePrice.setEnabled(true);
+    }
+
+    private void setEnableView(){
+        binding.btnSave.setVisibility(View.GONE);
+        binding.tvAddPhoto.setEnabled(false);
+        binding.imgProduct.setEnabled(false);
+        binding.tieId.setEnabled(false);
+        binding.tieName.setEnabled(false);
+        binding.tiePrice.setEnabled(false);
+        binding.tieManufacture.setEnabled(false);
     }
 }

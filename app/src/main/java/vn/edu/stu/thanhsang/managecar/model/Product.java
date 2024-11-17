@@ -1,5 +1,7 @@
 package vn.edu.stu.thanhsang.managecar.model;
 
+import android.os.Build;
+import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
@@ -7,13 +9,14 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class Product implements Serializable {
+public class Product implements Parcelable {
     private String idProduct;
     private String nameProduct;
     private String yearProduct;
     private String priceProduct;
     private byte[] imageProduct;
     private String branchProduct;
+
     public Product(
             String idProduct,
             String nameProduct,
@@ -90,5 +93,41 @@ public class Product implements Serializable {
                 ", imageProduct=" + Arrays.toString(imageProduct) +
                 ", branchProduct='" + branchProduct + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(idProduct);
+        dest.writeString(nameProduct);
+        dest.writeString(yearProduct);
+        dest.writeString(priceProduct);
+        dest.writeByteArray(imageProduct);
+        dest.writeString(branchProduct);
+    }
+
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
+
+    protected Product(Parcel in) {
+        idProduct = in.readString();
+        nameProduct = in.readString();
+        yearProduct = in.readString();
+        priceProduct = in.readString();
+        imageProduct = in.createByteArray();
+        branchProduct = in.readString();
     }
 }

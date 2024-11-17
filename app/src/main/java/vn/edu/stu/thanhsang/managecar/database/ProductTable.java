@@ -56,7 +56,7 @@ public class ProductTable {
             String id,
             String name,
             String year,
-            double price,
+            String price,
             byte[] image,
             String branch
     ){
@@ -72,7 +72,7 @@ public class ProductTable {
         statement.clearBindings();
         statement.bindString(1,name);
         statement.bindString(2,year);
-        statement.bindDouble(3,price);
+        statement.bindString(3,price);
         statement.bindBlob(4,image);
         statement.bindString(5,branch);
         statement.bindString(6,id);

@@ -13,7 +13,7 @@
             android:id="@+id/img_product"
             android:src="@drawable/logo_car_default"
             android:layout_width="0dp"
-            android:scaleType="centerInside"
+            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
