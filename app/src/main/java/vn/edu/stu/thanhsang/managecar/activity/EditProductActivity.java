@@ -44,7 +44,7 @@ import vn.edu.stu.thanhsang.managecar.databinding.ActivityEditProductBinding;
 import vn.edu.stu.thanhsang.managecar.model.Product;
 
 public class EditProductActivity extends AppCompatActivity {
-    public static final int CODE_REQUEST_PERMISSION = 300;
+    private static final int CODE_REQUEST_PERMISSION = 300;
 
     ActivityEditProductBinding binding;
     Product product = null;

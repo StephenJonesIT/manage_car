@@ -1,16 +1,11 @@
 package vn.edu.stu.thanhsang.managecar.activity;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +28,7 @@ import java.util.Objects;
 import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityEditBranchBinding;
 import vn.edu.stu.thanhsang.managecar.model.Branch;
+import vn.edu.stu.thanhsang.managecar.utils.ImageHelper;
 
 public class EditBranchActivity extends AppCompatActivity {
 
@@ -67,8 +63,8 @@ public class EditBranchActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        binding.imgBranch.setOnClickListener(v -> checkPermissionAndOpenSelector());
-        binding.tvAddPhoto.setOnClickListener(v -> checkPermissionAndOpenSelector());
+        binding.imgBranch.setOnClickListener(v -> ImageHelper.checkPermissionAndOpenSelector(this,launcher));
+        binding.tvAddPhoto.setOnClickListener(v -> ImageHelper.checkPermissionAndOpenSelector(this,launcher));
 
         binding.btnSave.setOnClickListener(v -> {
             if (branch!=null){
@@ -104,58 +100,16 @@ public class EditBranchActivity extends AppCompatActivity {
         );
     }
 
-    private void checkPermissionAndOpenSelector() {
-        String[] permissions = {
-                Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-        };
-
-        boolean isPermission = true;
-
-        for (String permission: permissions) {
-            if(checkSelfPermission(permission)!=PERMISSION_GRANTED){
-                isPermission = false;
-                break;
-            }
-        }
-
-        if (!isPermission)
-            requestPermissions(permissions,CODE_REQUEST_PERMISSION);
-        else
-            openImageSelector();
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode==CODE_REQUEST_PERMISSION){
-            boolean allPermissionsGranted = true;
-            for (int grantResult: grantResults) {
-                if (grantResult != PERMISSION_GRANTED) {
-                    allPermissionsGranted = false;
-                    break;
-                }
-            }
-            if (allPermissionsGranted)
-                openImageSelector();
-        }else{
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    @SuppressLint("IntentReset")
-    private void openImageSelector() {
-        Intent intentGallery = new Intent(
-                Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intentGallery.setType("image/*");
-
-        Intent intentCamera = new Intent(
-            MediaStore.ACTION_IMAGE_CAPTURE
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        ImageHelper.onRequestPermissionsResult(
+                this,
+                requestCode,
+                permissions,
+                grantResults,
+                launcher
         );
-
-        Intent chooser = Intent.createChooser(intentGallery,"Select Image");
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS,new Intent[]{intentCamera});
-        launcher.launch(chooser);
     }
 
     private void processAddBranch() {

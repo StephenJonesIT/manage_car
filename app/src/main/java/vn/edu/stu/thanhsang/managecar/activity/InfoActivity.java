@@ -67,17 +67,13 @@ public class InfoActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         Task<Location> task = client.getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                currentLocation = location;
-                SupportMapFragment supportMapFragment =
-                        (SupportMapFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.map_stu);
-                assert supportMapFragment!=null;
-                supportMapFragment.getMapAsync(InfoActivity.this);
-            }
-
+        task.addOnSuccessListener(location -> {
+            currentLocation = location;
+            SupportMapFragment supportMapFragment =
+                    (SupportMapFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.map_stu);
+            assert supportMapFragment!=null;
+            supportMapFragment.getMapAsync(InfoActivity.this);
         });
     }
 

@@ -54,7 +54,8 @@
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/cv_branch"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="UseCompatTextViewDrawableXml" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
