@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.adapter.ProductAdapter;
@@ -66,8 +67,8 @@ public class ProductActivity extends AppCompatActivity {
                             ProductActivity.this,
                             EditProductActivity.class
                     );
-                    Product data = listProduct.get(position);
-                    intentEdit.putExtra("PRODUCT",data);
+
+                    intentEdit.putExtra("PRODUCT",listProduct.get(position));
                     launcher.launch(intentEdit);
                 },
                 position -> {
@@ -100,7 +101,7 @@ public class ProductActivity extends AppCompatActivity {
 
     private void addEvents() {
         binding.btnAddProduct.setOnClickListener(v -> {
-            startActivity(new Intent(ProductActivity.this, EditProductActivity.class));
+            launcher.launch(new Intent(ProductActivity.this, EditProductActivity.class));
         });
     }
 
@@ -169,17 +170,52 @@ public class ProductActivity extends AppCompatActivity {
     }
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult o) {
-
+            result -> {
+                if (result.getResultCode()==EditProductActivity.CODE_ADD){
+                    Product product = Objects.requireNonNull(result.getData()).getParcelableExtra("PRODUCT");
+                    processAddProduct(product);
+                }
+                else if (result.getResultCode()==EditProductActivity.CODE_EDIT){
+                    Product product = Objects.requireNonNull(result.getData()).getParcelableExtra("PRODUCT");
+                    processEditProduct(product);
                 }
             }
     );
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void processEditProduct(Product product) {
+        if (product==null){
+            return;
+        }
+        SQLiteDatabase db = MainActivity.manageCarDB.getWritableDatabase();
+        ProductTable.updateProduct(
+                db,
+                product.getIdProduct(),
+                product.getNameProduct(),
+                product.getYearProduct(),
+                product.getPriceProduct(),
+                product.getImageProduct(),
+                product.getBranchProduct()
+        );
+        showToasts("Edit product success");
+        getDataFromDatabase();
+    }
+
+    private void processAddProduct(Product product) {
+        if (product==null){
+            return;
+        }
+
+        SQLiteDatabase db = MainActivity.manageCarDB.getWritableDatabase();
+        ProductTable.insertProduct(
+                db,
+                product.getIdProduct(),
+                product.getNameProduct(),
+                product.getYearProduct(),
+                product.getPriceProduct(),
+                product.getImageProduct(),
+                product.getBranchProduct()
+        );
+        showToasts("Add product success");
         getDataFromDatabase();
     }
 }

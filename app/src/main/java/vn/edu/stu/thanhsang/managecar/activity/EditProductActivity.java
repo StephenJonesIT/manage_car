@@ -30,8 +30,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.widget.NestedScrollView;
-
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,13 +37,14 @@ import java.util.Objects;
 
 import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.database.BranchTable;
-import vn.edu.stu.thanhsang.managecar.database.ProductTable;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityEditProductBinding;
 import vn.edu.stu.thanhsang.managecar.model.Product;
+import vn.edu.stu.thanhsang.managecar.utils.ImageHelper;
 
 public class EditProductActivity extends AppCompatActivity {
     private static final int CODE_REQUEST_PERMISSION = 300;
-
+    public static final int CODE_ADD = 100;
+    public static final int CODE_EDIT = 200;
     ActivityEditProductBinding binding;
     Product product = null;
     List<String> listNameBranch;
@@ -101,9 +100,9 @@ public class EditProductActivity extends AppCompatActivity {
 
     private void addEvents() {
 
-        binding.tvAddPhoto.setOnClickListener(v -> checkPermissionAndOpenSelector());
+        binding.tvAddPhoto.setOnClickListener(v -> ImageHelper.checkPermissionAndOpenSelector(this,launcher));
 
-        binding.imgProduct.setOnClickListener(v -> checkPermissionAndOpenSelector());
+        binding.imgProduct.setOnClickListener(v -> ImageHelper.checkPermissionAndOpenSelector(this,launcher));
 
         binding.btnSave.setOnClickListener(v -> processSaveProduct());
     }
@@ -139,50 +138,12 @@ public class EditProductActivity extends AppCompatActivity {
         binding.spnBranch.setSelection(position);
     }
 
-    private void checkPermissionAndOpenSelector() {
-        String[] permissions = {
-                Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-        };
-
-        boolean isPermission = true;
-
-        for (String permission: permissions) {
-            if(checkSelfPermission(permission)!=PERMISSION_GRANTED){
-                isPermission = false;
-                break;
-            }
-        }
-
-        if (!isPermission)
-            requestPermissions(permissions,CODE_REQUEST_PERMISSION);
-        else
-            openImageSelector();
-    }
-
-    @SuppressLint("IntentReset")
-    private void openImageSelector() {
-        Intent intentGallery = new Intent(
-                Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intentGallery.setType("image/*");
-
-        Intent intentCamera = new Intent(
-                MediaStore.ACTION_IMAGE_CAPTURE
-        );
-
-        Intent chooser = Intent.createChooser(intentGallery,"Select Image");
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS,new Intent[]{intentCamera});
-        launcher.launch(chooser);
-    }
-
     private void processSaveProduct() {
         if (product!=null){
             processEditProduct();
         }else {
             processAddProduct();
         }
-        finish();
     }
 
     private void processAddProduct() {
@@ -197,38 +158,35 @@ public class EditProductActivity extends AppCompatActivity {
             return;
         }
 
-        for (Product item : ProductActivity.listProduct){
-            if (item.getIdProduct().equals(id)){
-                showToasts("Id Product already exists");
-                return;
-            }
-        }
-        SQLiteDatabase db = MainActivity.manageCarDB.getWritableDatabase();
-        ProductTable.insertProduct(db, id, name, year, price, image, branch);
-        showToasts("Add product success");
+        Intent intent = new Intent();
+        product = new Product(id,name,year,price,image,branch);
+        intent.putExtra("PRODUCT",product);
+        setResult(CODE_ADD,intent);
+        finish();
     }
 
     private void processEditProduct() {
-        String id = String.valueOf(binding.tieId.getText());
-        String name = String.valueOf(binding.tieName.getText());
-        String price = String.valueOf(binding.tiePrice.getText());
-        String year = String.valueOf(binding.tieManufacture.getText());
-        String branch = String.valueOf(binding.spnBranch.getSelectedItem());
+        String id = Objects.requireNonNull(binding.tieId.getText()).toString();
+        String name = Objects.requireNonNull(binding.tieName.getText()).toString();
+        String price = Objects.requireNonNull(binding.tiePrice.getText()).toString();
+        String year = Objects.requireNonNull(binding.tieManufacture.getText()).toString();
+        String branch = binding.spnBranch.getSelectedItem().toString();
         byte[] image = getImageFromView();
 
         if (id.isEmpty() || name.isEmpty() || year.isEmpty()){
             return;
         }
 
-        for (Product item : ProductActivity.listProduct){
-            if (item.getIdProduct().equals(id)){
-                SQLiteDatabase db = MainActivity.manageCarDB.getWritableDatabase();
-                ProductTable.updateProduct(db, id, name, year, price, image, branch);
-                showToasts("Edit product success");
-                return;
-            }
-        }
-        showToasts("Edit product failure");
+        Intent intent = new Intent();
+        product.setIdProduct(id);
+        product.setNameProduct(name);
+        product.setYearProduct(year);
+        product.setPriceProduct(price);
+        product.setBranchProduct(branch);
+        product.setImageProduct(image);
+        intent.putExtra("PRODUCT",product);
+        setResult(CODE_EDIT,intent);
+        finish();
     }
 
     private byte[] getImageFromView() {
@@ -241,19 +199,14 @@ public class EditProductActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode==CODE_REQUEST_PERMISSION){
-            boolean allPermissionsGranted = true;
-            for (int grantResult: grantResults) {
-                if (grantResult != PERMISSION_GRANTED) {
-                    allPermissionsGranted = false;
-                    break;
-                }
-            }
-            if (allPermissionsGranted)
-                openImageSelector();
-        }else{
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        ImageHelper.onRequestPermissionsResult(
+                EditProductActivity.this,
+                requestCode,
+                permissions,
+                grantResults,
+                launcher
+        );
     }
 
     @Override

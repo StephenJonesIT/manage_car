@@ -132,9 +132,9 @@ public class EditBranchActivity extends AppCompatActivity {
 
     private void processEditBranch() {
         if (branch != null){
-            String id = String.valueOf(binding.tieId.getText());
-            String name = String.valueOf(binding.tieName.getText());
-            String base = String.valueOf(binding.tieBase.getText());
+            String id = Objects.requireNonNull(binding.tieId.getText()).toString();
+            String name = Objects.requireNonNull(binding.tieName.getText()).toString();
+            String base = Objects.requireNonNull(binding.tieBase.getText()).toString();
             byte[] image = getImageFromView();
 
             if (id.isEmpty() || name.isEmpty() || base.isEmpty()){

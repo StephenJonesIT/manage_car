@@ -10,8 +10,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -25,10 +23,12 @@ import java.util.List;
 
 import vn.edu.stu.thanhsang.managecar.R;
 import vn.edu.stu.thanhsang.managecar.adapter.BranchAdapter;
+import vn.edu.stu.thanhsang.managecar.business.branch.ListBranchBiz;
 import vn.edu.stu.thanhsang.managecar.database.BranchTable;
 import vn.edu.stu.thanhsang.managecar.database.ManageCarDB;
 import vn.edu.stu.thanhsang.managecar.databinding.ActivityMainBinding;
 import vn.edu.stu.thanhsang.managecar.model.Branch;
+import vn.edu.stu.thanhsang.managecar.utils.ViewHelper;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         });
         addViews();
         addEvents();
+        getDataFromDatabase();
     }
 
     @SuppressLint("ResourceAsColor")
@@ -80,10 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
             binding.rcvBranch.setLayoutManager(new LinearLayoutManager(this));
             binding.rcvBranch.setAdapter(adapter);
-            getDataFromDatabase();
     }
-
-
 
     private void addEvents() {
         binding.btnAddBranch.setOnClickListener(v -> {
@@ -93,20 +91,15 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("NotifyDataSetChanged")
     private void getDataFromDatabase() {
-        SQLiteDatabase db = manageCarDB.getReadableDatabase();
-        Cursor cursorBranch = BranchTable.getAllBranch(db);
+        Cursor cursorBranch = ListBranchBiz.getDataFromDatabase();
         branchList.clear();
-
-        while (cursorBranch.moveToNext()){
-            branchList.add(new Branch(
-                    cursorBranch.getString(0),
-                    cursorBranch.getString(1),
-                    cursorBranch.getString(2),
-                    cursorBranch.getBlob(3)
-            ));
-        }
+        branchList.addAll(
+                ListBranchBiz.convertCursorToList(cursorBranch)
+        );
         adapter.notifyDataSetChanged();
+        cursorBranch.close();
     }
+
     private void processDeleteBranch(int position) {
     }
 
@@ -135,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         String id = branch.getId();
         for (Branch b: branchList) {
             if (b.getId().equals(id)){
-                showToasts("Id already exists");
+                ViewHelper.showToasts(this,"Id already exists");
                 return;
             }
         }
@@ -145,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         byte[] image = branch.getImage();
         SQLiteDatabase db = manageCarDB.getWritableDatabase();
         BranchTable.InsertBranch(db,id,name,base,image);
-        showToasts("Add branch success");
+        ViewHelper.showToasts(this,"Add branch success");
     }
 
     private void processEditBranch(Branch branch) {
@@ -160,11 +153,11 @@ public class MainActivity extends AppCompatActivity {
                         branch.getBase(),
                         branch.getImage()
                 );
-                showToasts("Edit branch success");
+                ViewHelper.showToasts(this,"Edit branch success");
                 return;
             }
         }
-        showToasts("Edit branch failed");
+        ViewHelper.showToasts(this,"Edit branch failed");
     }
 
     @Override
@@ -207,7 +200,5 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showToasts(String message){
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
+
 }
